@@ -2,8 +2,10 @@ package com.justcode.minhasfinancas.model.entity;
 
 import com.justcode.minhasfinancas.model.enums.StatusLancamento;
 import com.justcode.minhasfinancas.model.enums.TipoLancamento;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
 import javax.persistence.*;
@@ -14,6 +16,8 @@ import java.time.LocalDate;
 @Table (name = "lancamento")
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Lancamento {
 
     @Id
@@ -21,8 +25,8 @@ public class Lancamento {
     @Column (name = "id")
     private  long id;
 
-    @Column (name = "descricacao")
-    private String descricacao;
+    @Column (name = "descricao")
+    private String descricao;
 
     @Column (name = "mes")
     private Integer mes;

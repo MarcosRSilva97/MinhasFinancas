@@ -49,5 +49,11 @@ public class UsuarioServiceImplementacao implements UsuarioService {
         }
     }
 
+    @Override
+    public Optional<Usuario> buscarPorId(Long id) {
+
+        return usuarioRepository.findById(id);
+    }
+
 
 }

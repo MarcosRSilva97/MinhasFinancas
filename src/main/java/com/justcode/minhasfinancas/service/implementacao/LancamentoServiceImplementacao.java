@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class LancamentoServiceImplementacao implements LancamentoService {
@@ -42,10 +43,7 @@ public class LancamentoServiceImplementacao implements LancamentoService {
     @Override
     @Transactional (readOnly = true)
     public List<Lancamento> buscarLancamento(Lancamento lancamentoFiltro) {
-        Example example = Example.of(lancamentoFiltro,
-                ExampleMatcher.matching()
-                    .withIgnoreCase()
-                    .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING));
+        Example example = Example.of(lancamentoFiltro, ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING));
         return lancamentoRepository.findAll(example);
     }
 
@@ -65,7 +63,7 @@ public class LancamentoServiceImplementacao implements LancamentoService {
 
     @Override
     public void validarLancamento(Lancamento lancamento) {
-        if(lancamento.getDescricacao() == null || lancamento.getDescricacao().trim().equals("")){
+        if(lancamento.getDescricao() == null || lancamento.getDescricao().trim().equals("")){
             throw new RegraNegocioException("Informe uma Descrição válida.");
         }
 
@@ -88,5 +86,10 @@ public class LancamentoServiceImplementacao implements LancamentoService {
         if (lancamento.getTipo() == null ){
             throw new RegraNegocioException("Informe um tipo de Lançamento.");
         }
+    }
+
+    @Override
+    public Optional<Lancamento> buscarPorId(Long id) {
+        return lancamentoRepository.findById(id);
     }
 }
