@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -131,5 +132,18 @@ public class LancamentoController {
             }
         }).orElseGet(() ->
         new ResponseEntity("Lançamento não encontrado na base de Dados.", HttpStatus.BAD_REQUEST));
+    }
+
+    @GetMapping("/obterSaldo/{id}")
+    public ResponseEntity obterSaldo (@PathVariable("id") Long id){
+
+        Optional<Usuario> usuario = usuarioService.buscarPorId(id);
+
+        if (!usuario.isPresent()){
+            return new ResponseEntity("Usuário não encontrado.",HttpStatus.NOT_FOUND);
+        }
+
+        BigDecimal saldo = lancamentoService.obterSaldoPorUsuario(id);
+        return ResponseEntity.ok(saldo);
     }
 }

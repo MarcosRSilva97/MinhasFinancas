@@ -4,6 +4,7 @@ import com.justcode.minhasfinancas.model.entity.Lancamento;
 import com.justcode.minhasfinancas.model.enums.StatusLancamento;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,4 +23,6 @@ public interface LancamentoService {
     void validarLancamento (Lancamento lancamento);
 
     Optional<Lancamento> buscarPorId (Long id);
+
+    BigDecimal obterSaldoPorUsuario(Long id);
 }

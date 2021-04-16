@@ -3,6 +3,7 @@ package com.justcode.minhasfinancas.service.implementacao;
 import com.justcode.minhasfinancas.exceptions.RegraNegocioException;
 import com.justcode.minhasfinancas.model.entity.Lancamento;
 import com.justcode.minhasfinancas.model.enums.StatusLancamento;
+import com.justcode.minhasfinancas.model.enums.TipoLancamento;
 import com.justcode.minhasfinancas.model.repository.LancamentoRepository;
 import com.justcode.minhasfinancas.service.LancamentoService;
 import org.springframework.data.domain.Example;
@@ -95,5 +96,22 @@ public class LancamentoServiceImplementacao implements LancamentoService {
     @Override
     public Optional<Lancamento> buscarPorId(Long id) {
         return lancamentoRepository.findById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BigDecimal obterSaldoPorUsuario(Long id) {
+        BigDecimal receitas = lancamentoRepository.obterSaldoPorTipoLancamentoUsuario(id, TipoLancamento.RECEITA.name());
+        BigDecimal despesas = lancamentoRepository.obterSaldoPorTipoLancamentoUsuario(id, TipoLancamento.DESPESA.name());
+
+        if (receitas == null){
+            receitas = BigDecimal.ZERO;
+        }
+
+        if (despesas == null){
+            despesas = BigDecimal.ZERO;
+        }
+
+        return receitas.subtract(despesas);
     }
 }
