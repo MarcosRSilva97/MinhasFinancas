@@ -1,6 +1,7 @@
 package com.justcode.minhasfinancas.controller;
 
 
+import com.justcode.minhasfinancas.dto.AtualizaStatusDTO;
 import com.justcode.minhasfinancas.dto.LancamentoDTO;
 import com.justcode.minhasfinancas.exceptions.RegraNegocioException;
 import com.justcode.minhasfinancas.model.entity.Lancamento;
@@ -115,8 +116,20 @@ public class LancamentoController {
     }
 
     @PutMapping("/atualizarStatus/{id}")
-    public ResponseEntity atualizarStatus(){
-
-        return null;
+    public ResponseEntity atualizarStatus(@PathVariable ("id") Long id, @RequestBody AtualizaStatusDTO atualizaStatusDTO){
+        return lancamentoService.buscarPorId(id).map(entity -> {
+            StatusLancamento statusSelecionado = StatusLancamento.valueOf(atualizaStatusDTO.getStatus());
+            if (statusSelecionado == null){
+                return ResponseEntity.badRequest().body("Não foi possível atualizar o status do lançamento, envie um status válido");
+            }
+            try {
+                entity.setStatus(statusSelecionado);
+                lancamentoService.atualizarLancamento(entity);
+                return ResponseEntity.ok(entity);
+            }catch (RegraNegocioException exception){
+                return ResponseEntity.badRequest().body(exception.getMessage());
+            }
+        }).orElseGet(() ->
+        new ResponseEntity("Lançamento não encontrado na base de Dados.", HttpStatus.BAD_REQUEST));
     }
 }
