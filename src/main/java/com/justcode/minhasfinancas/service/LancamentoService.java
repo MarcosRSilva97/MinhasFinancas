@@ -2,6 +2,7 @@ package com.justcode.minhasfinancas.service;
 
 import com.justcode.minhasfinancas.model.entity.Lancamento;
 import com.justcode.minhasfinancas.model.enums.StatusLancamento;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;

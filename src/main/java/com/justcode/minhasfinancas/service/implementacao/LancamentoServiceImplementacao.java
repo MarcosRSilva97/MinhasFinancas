@@ -43,7 +43,11 @@ public class LancamentoServiceImplementacao implements LancamentoService {
     @Override
     @Transactional (readOnly = true)
     public List<Lancamento> buscarLancamento(Lancamento lancamentoFiltro) {
-        Example example = Example.of(lancamentoFiltro, ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING));
+        Example <Lancamento> example = Example.of(lancamentoFiltro, ExampleMatcher.matching()
+                .withIgnorePaths("id")
+                .withIgnoreCase()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING));
+
         return lancamentoRepository.findAll(example);
     }
 

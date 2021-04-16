@@ -113,4 +113,10 @@ public class LancamentoController {
         return  ResponseEntity.ok(lancamentos);
 
     }
+
+    @PutMapping("/atualizarStatus/{id}")
+    public ResponseEntity atualizarStatus(){
+
+        return null;
+    }
 }
