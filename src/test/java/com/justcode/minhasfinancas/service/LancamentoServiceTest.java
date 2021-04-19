@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.*;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -61,5 +62,21 @@ public class LancamentoServiceTest {
 
     }
 
+    @Test
+    public void deveAtualizarUmLancamento(){
+        //cenário
+        Lancamento lancamentoSalvo = LancamentoRepositoryTest.criarLancamento();
+        lancamentoSalvo.setId(1l);
+        lancamentoSalvo.setStatus(StatusLancamento.PENDENTE);
+
+        Mockito.doNothing().when(lancamentoServiceImplementacao).validarLancamento(lancamentoSalvo);
+        Mockito.when(lancamentoRepository.save(lancamentoSalvo)).thenReturn(lancamentoSalvo);
+
+        //execução
+        lancamentoServiceImplementacao.atualizarLancamento(lancamentoSalvo);
+
+        //verificação
+        Mockito.verify(lancamentoRepository, Mockito.times(1)).save(lancamentoSalvo);
+    }
 
 }
