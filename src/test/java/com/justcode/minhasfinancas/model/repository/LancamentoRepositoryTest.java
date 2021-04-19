@@ -4,7 +4,7 @@ package com.justcode.minhasfinancas.model.repository;
 import com.justcode.minhasfinancas.model.entity.Lancamento;
 import com.justcode.minhasfinancas.model.enums.StatusLancamento;
 import com.justcode.minhasfinancas.model.enums.TipoLancamento;
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 
 @RunWith (SpringRunner.class)
@@ -35,21 +36,45 @@ public class LancamentoRepositoryTest {
         Lancamento lancamento = criarLancamento();
         lancamento = lancamentoRepository.save(lancamento);
 
-        Assertions.assertThat(lancamento.getId()).isNotNull();
+        assertThat(lancamento.getId()).isNotNull();
     }
 
     @Test
     public void deveDeletarUmLancamento(){
-        Lancamento lancamento = criarLancamento();
-        entityManager.persist(lancamento);
 
+        Lancamento lancamento = criarEPersistirLancamento();
         lancamento = entityManager.find(Lancamento.class, lancamento.getId());
 
         lancamentoRepository.delete(lancamento);
 
         Lancamento lancamentoInexistente = entityManager.find(Lancamento.class, lancamento.getId());
 
-        Assertions.assertThat(lancamentoInexistente).isNull();
+        assertThat(lancamentoInexistente).isNull();
+    }
+
+    @Test
+    public void deveAtualizarUmLancamento(){
+        Lancamento lancamento = criarEPersistirLancamento();
+        lancamento.setAno(2021);
+        lancamento.setDescricao("Teste atualizar");
+        lancamento.setStatus(StatusLancamento.CANCELADO);
+
+        lancamentoRepository.save(lancamento);
+
+        Lancamento lancamentoAtualizado = entityManager.find(Lancamento.class, lancamento.getId());
+
+        assertThat(lancamentoAtualizado.getAno()).isEqualTo(2021);
+        assertThat(lancamento.getDescricao()).isEqualTo("Teste atualizar");
+        assertThat(lancamento.getStatus()).isEqualTo(StatusLancamento.CANCELADO);
+    }
+
+    @Test
+    public void deveBuscarUmLancamentoPorId(){
+        Lancamento lancamento = criarEPersistirLancamento();
+
+        Optional<Lancamento> lancamentoEncontrado = lancamentoRepository.findById(lancamento.getId());
+
+        assertThat(lancamentoEncontrado.isPresent()).isTrue();
     }
 
     private Lancamento criarLancamento(){
@@ -62,5 +87,11 @@ public class LancamentoRepositoryTest {
                 .status(StatusLancamento.PENDENTE)
                 .dataCadastro(LocalDate.now())
                 .build();
+    }
+
+    private Lancamento criarEPersistirLancamento(){
+        Lancamento lancamento = criarLancamento();
+        entityManager.persist(lancamento);
+        return  lancamento;
     }
 }
