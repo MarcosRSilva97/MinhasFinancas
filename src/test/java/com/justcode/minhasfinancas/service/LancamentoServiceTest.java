@@ -1,11 +1,14 @@
 package com.justcode.minhasfinancas.service;
 
+import com.justcode.minhasfinancas.exceptions.RegraNegocioException;
 import com.justcode.minhasfinancas.model.entity.Lancamento;
 import com.justcode.minhasfinancas.model.enums.StatusLancamento;
 import com.justcode.minhasfinancas.model.repository.LancamentoRepository;
 import com.justcode.minhasfinancas.model.repository.LancamentoRepositoryTest;
 import com.justcode.minhasfinancas.service.implementacao.LancamentoServiceImplementacao;
 import static org.assertj.core.api.Assertions.*;
+
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -41,6 +44,20 @@ public class LancamentoServiceTest {
         //validação
         assertThat(lancamento.getId()).isEqualTo(lancamentoSalvo.getId());
         assertThat(lancamento.getStatus()).isEqualTo(StatusLancamento.PENDENTE);
+
+    }
+
+    @Test
+    public void naoDeveSalvarUmLancamentoQuandoHouverErroDeValidacao(){
+        //cenário
+        Lancamento lancamentoASalvar = LancamentoRepositoryTest.criarLancamento();
+        Mockito.doThrow(RegraNegocioException.class).when(lancamentoServiceImplementacao).validarLancamento(lancamentoASalvar);
+
+        //execucao
+        catchThrowableOfType(() -> lancamentoServiceImplementacao.salvarLancamento(lancamentoASalvar), RegraNegocioException.class);
+
+        //verificacao
+        Mockito.verify(lancamentoRepository, Mockito.never()).save(lancamentoASalvar);
 
     }
 
