@@ -9,6 +9,7 @@ import com.justcode.minhasfinancas.service.implementacao.LancamentoServiceImplem
 import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -18,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @RunWith (SpringRunner.class)
 @ActiveProfiles ("test")
@@ -139,6 +141,40 @@ public class LancamentoServiceTest {
                 .isNotEmpty()
                 .hasSize(1)
                 .contains(lancamentoFiltrado);
+    }
+
+    @Test
+    public void deveAtualizarOStatusDeUmLancamento(){
+        //cenário
+        Lancamento lancamentoParaAtualizarStatus = LancamentoRepositoryTest.criarLancamento();
+        lancamentoParaAtualizarStatus.setId(1l);
+
+        StatusLancamento novoStatus = StatusLancamento.EFETIVADO;
+        Mockito.doReturn(lancamentoParaAtualizarStatus).when(lancamentoServiceImplementacao).atualizarLancamento(lancamentoParaAtualizarStatus);
+
+        //execução
+        lancamentoServiceImplementacao.atualizarStatus(lancamentoParaAtualizarStatus, novoStatus);
+
+        //validação
+        assertThat(lancamentoParaAtualizarStatus.getStatus()).isEqualTo(novoStatus);
+        Mockito.verify(lancamentoServiceImplementacao).atualizarLancamento(lancamentoParaAtualizarStatus);
+    }
+
+    @Test
+    public void devePesquisarUmLancamentoPorId(){
+        //cenário
+        Long id = 1l;
+
+        Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
+        lancamento.setId(id);
+
+        Mockito.when(lancamentoRepository.findById(id)).thenReturn(Optional.of(lancamento));
+
+        //execução
+        Optional<Lancamento> resultado = lancamentoServiceImplementacao.buscarPorId(id);
+
+        //verificação
+        assertThat(resultado.isPresent()).isTrue();
     }
 
 }
