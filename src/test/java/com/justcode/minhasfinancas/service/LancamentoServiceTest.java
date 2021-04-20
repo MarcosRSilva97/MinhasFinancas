@@ -7,16 +7,17 @@ import com.justcode.minhasfinancas.model.repository.LancamentoRepository;
 import com.justcode.minhasfinancas.model.repository.LancamentoRepositoryTest;
 import com.justcode.minhasfinancas.service.implementacao.LancamentoServiceImplementacao;
 import static org.assertj.core.api.Assertions.*;
-
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.data.domain.Example;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Arrays;
+import java.util.List;
 
 @RunWith (SpringRunner.class)
 @ActiveProfiles ("test")
@@ -64,19 +65,80 @@ public class LancamentoServiceTest {
 
     @Test
     public void deveAtualizarUmLancamento(){
-        //cenário
-        Lancamento lancamentoSalvo = LancamentoRepositoryTest.criarLancamento();
-        lancamentoSalvo.setId(1l);
-        lancamentoSalvo.setStatus(StatusLancamento.PENDENTE);
+        //cenario
+        Lancamento lancamentoParaAtualizar = LancamentoRepositoryTest.criarLancamento();
+        lancamentoParaAtualizar.setId(1l);
+        lancamentoParaAtualizar.setStatus(StatusLancamento.PENDENTE);
 
-        Mockito.doNothing().when(lancamentoServiceImplementacao).validarLancamento(lancamentoSalvo);
-        Mockito.when(lancamentoRepository.save(lancamentoSalvo)).thenReturn(lancamentoSalvo);
+        Mockito.doNothing().when(lancamentoServiceImplementacao).validarLancamento(lancamentoParaAtualizar);
+        Mockito.when(lancamentoRepository.save(lancamentoParaAtualizar)).thenReturn(lancamentoParaAtualizar);
+
+        //execucao
+        lancamentoServiceImplementacao.atualizarLancamento(lancamentoParaAtualizar);
+
+        //validacao
+        Mockito.verify(lancamentoRepository, Mockito.times(1)).save(lancamentoParaAtualizar);
+    }
+
+    //Entender o porque o id está preenchido
+
+    /*
+    @Test
+    public void deveLancarErroAoTentarAtualizarLancamentoQueAindaNaoFoiSalvo(){
+        //cenario
+        Lancamento lancamentoParaAtualizar = LancamentoRepositoryTest.criarLancamento();
+
+        //execucao
+        catchThrowableOfType(() ->lancamentoServiceImplementacao.atualizarLancamento(lancamentoParaAtualizar), NullPointerException.class);
+
+        //validacao
+        Mockito.verify(lancamentoRepository, Mockito.never()).save(lancamentoParaAtualizar);
+    } */
+
+    @Test
+    public void  deveDeletarUmLancamento (){
+        //cenário
+        Lancamento lancamentoParaDeletar = LancamentoRepositoryTest.criarLancamento();
+        lancamentoParaDeletar.setId(1l);
 
         //execução
-        lancamentoServiceImplementacao.atualizarLancamento(lancamentoSalvo);
+        lancamentoServiceImplementacao.deletarLancamento(lancamentoParaDeletar);
 
         //verificação
-        Mockito.verify(lancamentoRepository, Mockito.times(1)).save(lancamentoSalvo);
+        Mockito.verify(lancamentoRepository).delete(lancamentoParaDeletar);
+    }
+    //Entender o porque o id está preenchido
+
+    /*
+    @Test
+    public void deveLancarErroAoTentarDeletarUmLancamentoQueAindaNaoFoiSalvo(){
+        //cenário
+        Lancamento lancamentoParaDeletar = LancamentoRepositoryTest.criarLancamento();
+
+        //execucao
+        catchThrowableOfType(() -> lancamentoServiceImplementacao.deletarLancamento(lancamentoParaDeletar), NullPointerException.class);
+
+        //verificacao
+        Mockito.verify(lancamentoRepository, Mockito.never()).delete(lancamentoParaDeletar);
+    } */
+
+    @Test
+    public void deveFiltarLancamentos(){
+        //cenário
+        Lancamento lancamentoFiltrado = LancamentoRepositoryTest.criarLancamento();
+        lancamentoFiltrado.setId(1l);
+
+        List<Lancamento> lista = Arrays.asList(lancamentoFiltrado);
+        Mockito.when(lancamentoRepository.findAll(Mockito.any(Example.class))).thenReturn(lista);
+
+        //execução
+        List<Lancamento> resultado = lancamentoServiceImplementacao.buscarLancamento(lancamentoFiltrado);
+
+        //validação
+        assertThat(resultado)
+                .isNotEmpty()
+                .hasSize(1)
+                .contains(lancamentoFiltrado);
     }
 
 }
