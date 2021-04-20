@@ -177,4 +177,20 @@ public class LancamentoServiceTest {
         assertThat(resultado.isPresent()).isTrue();
     }
 
+    @Test
+    public void deveRetornarVazioQuandoOLancamentoNaoExiste(){
+        //cenário
+        Long id = 1l;
+
+        Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
+        lancamento.setId(id);
+
+        Mockito.when(lancamentoRepository.findById(id)).thenReturn(Optional.empty());
+
+        //execução
+        Optional<Lancamento> resultado = lancamentoServiceImplementacao.buscarPorId(id);
+
+        //verificação
+        assertThat(resultado.isPresent()).isFalse();
+    }
 }
