@@ -10,7 +10,6 @@ import com.justcode.minhasfinancas.service.implementacao.LancamentoServiceImplem
 import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -40,7 +39,7 @@ public class LancamentoServiceTest {
         Mockito.doNothing().when(lancamentoServiceImplementacao).validarLancamento(lancamentoASalvar);
 
         Lancamento lancamentoSalvo = LancamentoRepositoryTest.criarLancamento();
-        lancamentoSalvo.setId(1l);
+        lancamentoSalvo.setId(1L);
         lancamentoSalvo.setStatus(StatusLancamento.PENDENTE);
         Mockito.when(lancamentoRepository.save(lancamentoASalvar)).thenReturn(lancamentoSalvo);
 
@@ -71,7 +70,7 @@ public class LancamentoServiceTest {
     public void deveAtualizarUmLancamento(){
         //cenario
         Lancamento lancamentoParaAtualizar = LancamentoRepositoryTest.criarLancamento();
-        lancamentoParaAtualizar.setId(1l);
+        lancamentoParaAtualizar.setId(1L);
         lancamentoParaAtualizar.setStatus(StatusLancamento.PENDENTE);
 
         Mockito.doNothing().when(lancamentoServiceImplementacao).validarLancamento(lancamentoParaAtualizar);
@@ -103,7 +102,7 @@ public class LancamentoServiceTest {
     public void  deveDeletarUmLancamento (){
         //cenário
         Lancamento lancamentoParaDeletar = LancamentoRepositoryTest.criarLancamento();
-        lancamentoParaDeletar.setId(1l);
+        lancamentoParaDeletar.setId(1L);
 
         //execução
         lancamentoServiceImplementacao.deletarLancamento(lancamentoParaDeletar);
@@ -130,7 +129,7 @@ public class LancamentoServiceTest {
     public void deveFiltarLancamentos(){
         //cenário
         Lancamento lancamentoFiltrado = LancamentoRepositoryTest.criarLancamento();
-        lancamentoFiltrado.setId(1l);
+        lancamentoFiltrado.setId(1L);
 
         List<Lancamento> lista = Arrays.asList(lancamentoFiltrado);
         Mockito.when(lancamentoRepository.findAll(Mockito.any(Example.class))).thenReturn(lista);
@@ -149,7 +148,7 @@ public class LancamentoServiceTest {
     public void deveAtualizarOStatusDeUmLancamento(){
         //cenário
         Lancamento lancamentoParaAtualizarStatus = LancamentoRepositoryTest.criarLancamento();
-        lancamentoParaAtualizarStatus.setId(1l);
+        lancamentoParaAtualizarStatus.setId(1L);
 
         StatusLancamento novoStatus = StatusLancamento.EFETIVADO;
         Mockito.doReturn(lancamentoParaAtualizarStatus).when(lancamentoServiceImplementacao).atualizarLancamento(lancamentoParaAtualizarStatus);
@@ -165,7 +164,7 @@ public class LancamentoServiceTest {
     @Test
     public void devePesquisarUmLancamentoPorId(){
         //cenário
-        Long id = 1l;
+        Long id = 1L;
 
         Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
         lancamento.setId(id);
@@ -182,7 +181,7 @@ public class LancamentoServiceTest {
     @Test
     public void deveRetornarVazioQuandoOLancamentoNaoExiste(){
         //cenário
-        Long id = 1l;
+        Long id = 1L;
 
         Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
         lancamento.setId(id);
@@ -252,7 +251,7 @@ public class LancamentoServiceTest {
 
         lancamento.setUsuario(new Usuario());
         //falta pegar o cenário onde não encontra o ID
-        lancamento.getUsuario().setId(1l);
+        lancamento.getUsuario().setId(1L);
 
         erro = catchThrowable(() -> lancamentoServiceImplementacao.validarLancamento(lancamento));
 
