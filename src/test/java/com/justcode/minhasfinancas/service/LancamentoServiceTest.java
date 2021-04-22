@@ -2,6 +2,7 @@ package com.justcode.minhasfinancas.service;
 
 import com.justcode.minhasfinancas.exceptions.RegraNegocioException;
 import com.justcode.minhasfinancas.model.entity.Lancamento;
+import com.justcode.minhasfinancas.model.entity.Usuario;
 import com.justcode.minhasfinancas.model.enums.StatusLancamento;
 import com.justcode.minhasfinancas.model.repository.LancamentoRepository;
 import com.justcode.minhasfinancas.model.repository.LancamentoRepositoryTest;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -192,5 +194,80 @@ public class LancamentoServiceTest {
 
         //verificação
         assertThat(resultado.isPresent()).isFalse();
+    }
+
+    @Test
+    public void deveLancarErroAoValidarLancamento(){
+        Lancamento lancamento = new Lancamento();
+
+        Throwable erro = catchThrowable(() -> lancamentoServiceImplementacao.validarLancamento(lancamento));
+        assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe uma Descrição válida.");
+
+        lancamento.setDescricao("");
+
+        erro = catchThrowable(() -> lancamentoServiceImplementacao.validarLancamento(lancamento));
+        assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe uma Descrição válida.");
+
+        lancamento.setDescricao("Salário");
+
+        erro = catchThrowable(() -> lancamentoServiceImplementacao.validarLancamento(lancamento));
+
+        assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Mês válido.");
+
+        lancamento.setMes(0);
+
+        erro = catchThrowable(() -> lancamentoServiceImplementacao.validarLancamento(lancamento));
+
+        assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Mês válido.");
+
+        lancamento.setMes(13);
+
+        erro = catchThrowable(() -> lancamentoServiceImplementacao.validarLancamento(lancamento));
+
+        assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Mês válido.");
+
+        lancamento.setMes(2);
+
+        erro = catchThrowable(() -> lancamentoServiceImplementacao.validarLancamento(lancamento));
+
+        assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Ano válido.");
+
+        lancamento.setAno(208);
+
+        erro = catchThrowable(() -> lancamentoServiceImplementacao.validarLancamento(lancamento));
+
+        assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Ano válido.");
+
+        lancamento.setAno(20201);
+
+        erro = catchThrowable(() -> lancamentoServiceImplementacao.validarLancamento(lancamento));
+
+        assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Ano válido.");
+
+        lancamento.setAno(2020);
+
+        erro = catchThrowable(() -> lancamentoServiceImplementacao.validarLancamento(lancamento));
+
+        assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Usuário.");
+
+        lancamento.setUsuario(new Usuario());
+        //falta pegar o cenário onde não encontra o ID
+        lancamento.getUsuario().setId(1l);
+
+        erro = catchThrowable(() -> lancamentoServiceImplementacao.validarLancamento(lancamento));
+
+        assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Valor válido.");
+
+        lancamento.setValor(BigDecimal.ZERO);
+
+        erro = catchThrowable(() -> lancamentoServiceImplementacao.validarLancamento(lancamento));
+
+        assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um Valor válido.");
+
+        lancamento.setValor(BigDecimal.valueOf(1));
+
+        erro = catchThrowable(() -> lancamentoServiceImplementacao.validarLancamento(lancamento));
+
+        assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um tipo de Lançamento.");
     }
 }
