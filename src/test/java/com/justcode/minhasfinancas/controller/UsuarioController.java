@@ -44,6 +44,7 @@ public class UsuarioController {
         //cenario
         String email = "usuario@email.com";
         String senha = "1234";
+        String nome = "teste";
 
         UsuarioDTO usuarioDTO = UsuarioDTO.builder().email(email).senha(senha).build();
         Usuario usuario = Usuario.builder().id(1L).email(email).senha(senha).build();
