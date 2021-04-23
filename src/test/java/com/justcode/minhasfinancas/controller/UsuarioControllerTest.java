@@ -88,4 +88,32 @@ public class UsuarioControllerTest {
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
+
+    @Test
+    public void deveCriarUmUsuario() throws Exception {
+        //cenario
+        String email = "usario@email.com";
+        String senha = "1234";
+
+        UsuarioDTO usuarioDTO = UsuarioDTO.builder().email(email).senha(senha).build();
+        Usuario usuarioCriado = Usuario.builder().id(1L).email(email).senha(senha).build();
+
+        Mockito.when(usuarioServiceImplementacao.salvarUsuario(Mockito.any(Usuario.class))).thenReturn(usuarioCriado);
+
+        String body = new ObjectMapper().writeValueAsString(usuarioDTO);
+
+        //execucao e verificacao
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(API.concat("/criarUsuario"))
+                .accept(FORMATO_JSON)
+                .contentType(FORMATO_JSON)
+                .content(body);
+
+        mockMvc
+                .perform(request)
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("id").value(usuarioCriado.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("email").value(usuarioCriado.getEmail()))
+                .andExpect(MockMvcResultMatchers.jsonPath("nome").value(usuarioCriado.getNome()));
+    }
 }
