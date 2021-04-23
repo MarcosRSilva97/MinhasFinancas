@@ -3,6 +3,7 @@ package com.justcode.minhasfinancas.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.justcode.minhasfinancas.dto.UsuarioDTO;
+import com.justcode.minhasfinancas.exceptions.ErroAutenticacao;
 import com.justcode.minhasfinancas.model.entity.Usuario;
 import com.justcode.minhasfinancas.service.implementacao.LancamentoServiceImplementacao;
 import com.justcode.minhasfinancas.service.implementacao.UsuarioServiceImplementacao;
@@ -63,5 +64,28 @@ public class UsuarioControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("id").value(usuarioAutenticado.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("email").value(usuarioAutenticado.getEmail()))
                 .andExpect(MockMvcResultMatchers.jsonPath("nome").value(usuarioAutenticado.getNome()));
+    }
+
+    @Test
+    public void deveRetornarBadRequestQuandoTiverErroDeAutenticacao() throws Exception{
+        //cenario
+        String email = "usario@email.com";
+        String senha = "1234";
+
+        UsuarioDTO usuarioDTO = UsuarioDTO.builder().email(email).senha(senha).build();
+        Mockito.when(usuarioServiceImplementacao.autenticar(email, senha)).thenThrow(ErroAutenticacao.class);
+
+        String body = new ObjectMapper().writeValueAsString(usuarioDTO);
+
+        //execucao e verificacao
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(API.concat("/autenticar"))
+                .accept(FORMATO_JSON)
+                .contentType(FORMATO_JSON)
+                .content(body);
+
+        mockMvc
+                .perform(request)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 }
